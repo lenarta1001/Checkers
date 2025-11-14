@@ -30,7 +30,7 @@ public class King extends Piece {
         List<Capture> captures = new ArrayList<>();
 
         List<Point> diagonalDirections = new ArrayList<>(List.of(new Point(1, -1), new Point(-1, -1), new Point(1, 1), new Point(-1, 1)));
-        diagonalDirections.removeIf(p -> p.equals(previousDirection));
+        diagonalDirections.removeIf(p -> p.equals(new Point(-1 * previousDirection.x, -1 * previousDirection.y)));
 
         for (Point direction : diagonalDirections) {    
             Point jumped = new Point(point.x + direction.x, point.y + direction.y);
@@ -89,8 +89,11 @@ public class King extends Piece {
         List<Capture> captures = validCaptures(board, point, new ArrayList<Capture>(), new Point(0, 0));
 
         List<Move> moves = new ArrayList<>();
-        moves.addAll(normalMoves);
+        if (captures.isEmpty()) {
+            moves.addAll(normalMoves);
+        }
         moves.addAll(captures);
+
 
         return moves;
     }

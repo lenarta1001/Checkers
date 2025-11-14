@@ -11,6 +11,7 @@ import com.checkers.model.board.Board;
 import com.checkers.model.move.*;
 
 public class testPiece {
+    
     @Test
     public void testGetColour() {
         Piece piece = new Checker(Colour.black);
@@ -34,11 +35,12 @@ public class testPiece {
         Board board = new Board();
         board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(11));
         board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(18));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(11)).validMoves(board, Board.pointFromSquareNumber(11));
-        Move move = new NormalMove(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(15), false);
+        Move expected = new NormalMove(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(15), false);
 
-        assertEquals(move, moves.getFirst());   
+        assertTrue(moves.stream().anyMatch(move -> move.equals(expected)));
     }
 
     @Test
@@ -47,11 +49,12 @@ public class testPiece {
         board.invert();
         board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(11));
         board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(18));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(11)).validMoves(board, Board.pointFromSquareNumber(11));
-        Move move = new NormalMove(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(15), true);
+        Move expected = new NormalMove(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(15), true);
 
-        assertEquals(move, moves.getFirst());   
+        assertTrue(moves.stream().anyMatch(move -> move.equals(expected)));
     }
 
     @Test
@@ -61,26 +64,26 @@ public class testPiece {
         board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(14));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(11)).validMoves(board, Board.pointFromSquareNumber(11));
-        Move move = new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18), false);
+        Move expected = new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18), false);
 
-        assertEquals(move, moves.getLast());   
+        assertTrue(moves.stream().anyMatch(move -> move.equals(expected)));
     }
 
     @Test
-    public void testValidCaprturesWhiteChecker() {
+    public void testValidCapturesWhiteChecker() {
         Board board = new Board();
         board.invert();
         board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(11));
         board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(14));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(11)).validMoves(board, Board.pointFromSquareNumber(11));
-        Move move = new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18), true);
+        Move expected = new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18), true);
 
-        assertEquals(move, moves.getLast());   
+        assertTrue(moves.stream().anyMatch(move -> move.equals(expected)));
     }
 
     @Test
-    public void testValidCapturesSequenceBlackChecker() {
+    public void testValidCaptureSequencesBlackChecker() {
         Board board = new Board();
         board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(11));
         board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(14));
@@ -92,12 +95,12 @@ public class testPiece {
         captures.add(new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18), false));
         captures.add(new Capture(Board.pointFromSquareNumber(18), Board.pointFromSquareNumber(27), false));
 
-        Move move = new CaptureSequence(captures, false);
-        assertEquals(move, moves.getLast());   
+        Move expected = new CaptureSequence(captures, false);
+        assertTrue(moves.stream().anyMatch(move -> move.equals(expected))); 
     }
 
     @Test
-    public void testValidCapturesSequenceWhiteChecker() {
+    public void testValidCaptureSequencesWhiteChecker() {
         Board board = new Board();
         board.invert();
         board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(11));
@@ -110,7 +113,114 @@ public class testPiece {
         captures.add(new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18), true));
         captures.add(new Capture(Board.pointFromSquareNumber(18), Board.pointFromSquareNumber(27), true));
 
-        Move move = new CaptureSequence(captures, true);
-        assertEquals(move, moves.getLast());   
+        Move expected = new CaptureSequence(captures, true);
+        assertTrue(moves.stream().anyMatch(move -> move.equals(expected)));
+    }
+
+    @Test
+    public void testValidNormalMovesBlackKing() {
+        Board board = new Board();
+        board.setPiece(new King(Colour.black), Board.pointFromSquareNumber(11));
+        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(18));
+
+        List<Move> moves = board.getPiece(Board.pointFromSquareNumber(11)).validMoves(board, Board.pointFromSquareNumber(11));
+        List<Move> expectedMoves = new ArrayList<>();
+        expectedMoves.add(new NormalMove(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(15), false));
+        expectedMoves.add(new NormalMove(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(6), false));
+        expectedMoves.add(new NormalMove(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(7), false));
+
+        for (Move expected : expectedMoves) {
+            assertTrue(moves.stream().anyMatch(move -> move.equals(expected)));
+        }
+    }
+
+    @Test
+    public void testValidNormalMovesWhiteKing() {
+        Board board = new Board();
+        board.invert();
+        board.setPiece(new King(Colour.white), Board.pointFromSquareNumber(11));
+        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(18));
+
+        List<Move> moves = board.getPiece(Board.pointFromSquareNumber(11)).validMoves(board, Board.pointFromSquareNumber(11));
+        List<Move> expectedMoves = new ArrayList<>();
+        expectedMoves.add(new NormalMove(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(15), true));
+        expectedMoves.add(new NormalMove(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(6), true));
+        expectedMoves.add(new NormalMove(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(7), true));
+
+        for (Move expected : expectedMoves) {
+            assertTrue(moves.stream().anyMatch(move -> move.equals(expected)));
+        }
+    }
+
+    @Test
+    public void testValidCapturesBlackKing() {
+        Board board = new Board();
+        board.setPiece(new King(Colour.black), Board.pointFromSquareNumber(11));
+        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(7));
+
+        List<Move> moves = board.getPiece(Board.pointFromSquareNumber(11)).validMoves(board, Board.pointFromSquareNumber(11));
+        List<Move> expectedMoves = new ArrayList<>();
+        expectedMoves.add(new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18), false));
+        expectedMoves.add(new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(4),false));
+
+        for (Move expected : expectedMoves) {
+            assertTrue(moves.stream().anyMatch(move -> move.equals(expected)));
+        }
+    }
+
+    @Test
+    public void testValidCapturesWhiteKing() {
+        Board board = new Board();
+        board.invert();
+        board.setPiece(new King(Colour.white), Board.pointFromSquareNumber(11));
+        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(7));
+
+        List<Move> moves = board.getPiece(Board.pointFromSquareNumber(11)).validMoves(board, Board.pointFromSquareNumber(11));
+        List<Move> expectedMoves = new ArrayList<>();
+        expectedMoves.add(new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18), true));
+        expectedMoves.add(new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(4),true));
+
+        for (Move expected : expectedMoves) {
+            assertTrue(moves.stream().anyMatch(move -> move.equals(expected)));
+        }
+    }
+
+    @Test
+    public void testValidCaptureSequencesBlackKing() {
+        Board board = new Board();
+        board.setPiece(new King(Colour.black), Board.pointFromSquareNumber(19));
+        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(13));
+
+        List<Move> moves = board.getPiece(Board.pointFromSquareNumber(19)).validMoves(board, Board.pointFromSquareNumber(19));
+
+        List<Capture> captures = new ArrayList<>();
+        captures.add(new Capture(Board.pointFromSquareNumber(19), Board.pointFromSquareNumber(10), false));
+        captures.add(new Capture(Board.pointFromSquareNumber(10), Board.pointFromSquareNumber(17), false));
+
+        Move expected = new CaptureSequence(captures, false);
+        assertTrue(moves.stream().anyMatch(move -> move.equals(expected))); 
+    }
+
+    @Test
+    public void testValidCaptureSequencesWhiteKing() {
+        Board board = new Board();
+        board.invert();
+        board.setPiece(new King(Colour.white), Board.pointFromSquareNumber(19));
+        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(13));
+
+        List<Move> moves = board.getPiece(Board.pointFromSquareNumber(19)).validMoves(board, Board.pointFromSquareNumber(19));
+
+        List<Capture> captures = new ArrayList<>();
+        captures.add(new Capture(Board.pointFromSquareNumber(19), Board.pointFromSquareNumber(10), true));
+        captures.add(new Capture(Board.pointFromSquareNumber(10), Board.pointFromSquareNumber(17), true));
+
+        Move expected = new CaptureSequence(captures, true);
+        assertTrue(moves.stream().anyMatch(move -> move.equals(expected))); 
     }
 }

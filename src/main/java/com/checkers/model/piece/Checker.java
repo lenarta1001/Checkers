@@ -89,7 +89,9 @@ public class Checker extends Piece {
         List<Capture> captures = validCaptures(board, point, new ArrayList<Capture>());
 
         List<Move> moves = new ArrayList<>();
-        moves.addAll(normalMoves);
+        if (captures.isEmpty()) {
+            moves.addAll(normalMoves);
+        }
         moves.addAll(captures);
 
         return moves;
