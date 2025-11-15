@@ -116,6 +116,4 @@ public class testBoard {
     public void testInvertPoint() {
         assertEquals(new Point(1, 0), Board.invertPoint(new Point(6, 7)));
     }
-
-    
 }

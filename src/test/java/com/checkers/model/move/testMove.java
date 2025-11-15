@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.*;
 
+import com.checkers.model.FileFormatException;
 import com.checkers.model.board.Board;
 import com.checkers.model.piece.*;
 
@@ -92,8 +93,10 @@ public class testMove {
 
     @Test
     public void testIsPromotion() {
+        Board board = new Board();
+        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(26));
         Move move = new NormalMove(Board.pointFromSquareNumber(26), Board.pointFromSquareNumber(29), false);
-        assertTrue(move.isPromotion());
+        assertTrue(move.isPromotion(board));
     }
 
     @Test
@@ -224,5 +227,100 @@ public class testMove {
             }
         }
         assertEquals("K", pieceAtToPoint.toString());
+    }
+
+    @Test
+    public void testNormalMoveFromStringNotInverted() throws FileFormatException {
+        Board board = new Board();
+        assertEquals(Move.moveFromString("11-14", board), new NormalMove(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(14), false));
+    }
+
+    @Test
+    public void testNormalMoveFromStringInverted() throws FileFormatException {
+        Board board = new Board();
+        board.invert();
+        assertEquals(Move.moveFromString("11-14", board), new NormalMove(Board.pointFromSquareNumber(22), Board.pointFromSquareNumber(19), true));
+    }
+
+    @Test
+    public void testCaptureFromStringNotInverted() throws FileFormatException {
+        Board board = new Board();
+        assertEquals(Move.moveFromString("11x18", board), new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18), false));
+    }
+
+    @Test
+    public void testCaptureFromStringInverted() throws FileFormatException {
+        Board board = new Board();
+        board.invert();
+        assertEquals(Move.moveFromString("22x15", board), new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18), true));
+    }
+
+    @Test
+    public void testCaptureSequenceFromStringNotInverted() throws FileFormatException {
+        Board board = new Board();
+        List<Capture> captures = new ArrayList<>();
+        captures.add(new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18), false));
+        captures.add(new Capture(Board.pointFromSquareNumber(18), Board.pointFromSquareNumber(27), false));
+        CaptureSequence captureSequence = new CaptureSequence(captures, false);
+        assertEquals(Move.moveFromString("11x18x27", board), captureSequence);
+    }
+
+    @Test
+    public void testCaptureSequenceFromStringInverted() throws IllegalArgumentException {
+        Board board = new Board();
+        board.invert();
+        List<Capture> captures = new ArrayList<>();
+        captures.add(new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18), true));
+        captures.add(new Capture(Board.pointFromSquareNumber(18), Board.pointFromSquareNumber(27), true));
+        CaptureSequence captureSequence = new CaptureSequence(captures, true);
+        assertEquals(Move.moveFromString("22x15x6", board), captureSequence);
+    }
+
+    @Test
+    public void testNormalMoveFromStringNumberOutOfRange() throws IllegalArgumentException {
+        Board board = new Board();
+        assertThrows(IllegalArgumentException.class, 
+            () -> { Move.moveFromString("33-1", board); }
+        );
+    }
+
+    @Test
+    public void testNormalMoveFromStringNotNumber() throws IllegalArgumentException {
+        Board board = new Board();
+        assertThrows(IllegalArgumentException.class, 
+            () -> { Move.moveFromString("ab-1", board); }
+        );
+    }
+
+    @Test
+    public void testNormalMoveFromStringTooManySeparators() throws IllegalArgumentException {
+        Board board = new Board();
+        assertThrows(IllegalArgumentException.class, 
+            () -> { Move.moveFromString("3-1-2", board); }
+        );
+    }
+
+    @Test
+    public void testCaptureFromStringNumberOutOfRange() throws IllegalArgumentException {
+        Board board = new Board();
+        assertThrows(IllegalArgumentException.class, 
+            () -> { Move.moveFromString("3x0", board); }
+        );
+    }
+
+    @Test
+    public void testCaptureFromStringNotNumber() throws IllegalArgumentException {
+        Board board = new Board();
+        assertThrows(IllegalArgumentException.class, 
+            () -> { Move.moveFromString("abx1", board); }
+        );
+    }
+
+    @Test
+    public void testMoveFromStringNoSeparator() throws IllegalArgumentException {
+        Board board = new Board();
+        assertThrows(IllegalArgumentException.class, 
+            () -> { Move.moveFromString("1122", board); }
+        );
     }
 }
