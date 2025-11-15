@@ -1,0 +1,8 @@
+[Event "World Championship"]
+[Site "Tallinn, Estonia"]
+[Date "2022.03.15"]
+[Round "3"]
+[White "John Doe"]
+[Black "Jane Smith"]
+
+1. 9-13 24-20
