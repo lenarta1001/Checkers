@@ -14,7 +14,7 @@ public abstract class Move {
     protected Point to;
     protected boolean onInvertedBoard;
 
-    public Move(Point from, Point to, boolean onInvertedBoard) {
+    protected Move(Point from, Point to, boolean onInvertedBoard) {
         this.from = from;
         this.to = to;
         this.onInvertedBoard = onInvertedBoard;
@@ -60,7 +60,7 @@ public abstract class Move {
                 throw new IllegalArgumentException(e);
             }
 
-            if (fromNumber > 32 || fromNumber < 1 || toNumber > 32 || fromNumber < 1) {
+            if (fromNumber > 32 || fromNumber < 1 || toNumber > 32 || toNumber < 1) {
                 throw new IllegalArgumentException();
             }
             boolean onInvertedBoard = board.isInvertedBoard();
@@ -86,7 +86,7 @@ public abstract class Move {
                     throw new IllegalArgumentException(e);
                 }
 
-                if (fromNumber > 32 || fromNumber < 1 || toNumber > 32 || fromNumber < 1) {
+                if (fromNumber > 32 || fromNumber < 1 || toNumber > 32 || toNumber < 1) {
                     throw new IllegalArgumentException();
                 }
 

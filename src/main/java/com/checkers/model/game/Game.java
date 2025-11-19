@@ -3,6 +3,8 @@ package com.checkers.model.game;
 import java.util.List;
 import java.util.Scanner;
 import java.awt.Point;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import com.checkers.model.move.*;
 import com.checkers.model.board.Board;
@@ -22,13 +25,25 @@ public class Game {
     private List<Move> moves;
     private HashMap<String, Integer> positionCounts;
     private int noPromotionCaptureCounter;
+    private Point selectedPoint;
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-    Board getBoard() {
+    
+    public Colour getPlayerToMove() {
+        return playerToMove;
+    }
+
+    public Board getBoard() {
         return board;
     }
 
-    Colour getPlayerToMove() {
-        return playerToMove;
+    public Point getSelectedPoint() {
+        return selectedPoint;
+    }
+
+    public void setSelectedPoint(Point selectedPoint) {
+        this.selectedPoint = selectedPoint;
+        support.firePropertyChange("boardChange", null, null);
     }
 
     public boolean isGameOver() {
@@ -41,23 +56,29 @@ public class Game {
     }
 
     public List<Move> validMovesOfPlayerToMove() {
-        List<Move> moves = new ArrayList<>();
+        List<Move> validMoves = new ArrayList<>();
         for (int i = 1; i <= 32; i++) {
             Point p = Board.pointFromSquareNumber(i);
 
             if (!board.isEmpty(p) && board.getPiece(p).getColour() == playerToMove) {
-                moves.addAll(board.getPiece(p).validMoves(board, p));
+                
+                validMoves.addAll(board.getPiece(p).validMoves(board, p));
             }
         }
-
-        return moves;
+        if (validMoves.stream().anyMatch(move -> move.isMandatory())) {
+            validMoves = validMoves.stream().filter(move -> move.isMandatory()).toList();
+        }
+        return validMoves;
     }
 
     public List<Move> validMovesAt(Point point) {
-        if (!Board.isInsideBoard(point) || board.isEmpty(point) || board.getPiece(point).getColour() != playerToMove) {
+        List<Move> potentialMoves = board.getPiece(point).validMoves(board, point);
+        List<Move> validMoves = validMovesOfPlayerToMove(); 
+        if (!Board.isInsideBoard(point) || board.isEmpty(point)
+            || board.getPiece(point).getColour() != playerToMove) {
             return new ArrayList<>();
         }
-        return board.getPiece(point).validMoves(board, point);
+        return potentialMoves.stream().filter(move -> validMoves.contains(move)).toList();
     }
     
     public void initGame() {
@@ -71,12 +92,24 @@ public class Game {
     public void cleanInitGame() {
         this.playerToMove = Colour.black;
         this.board = new Board();
-        this.moves = new ArrayList<Move>();
+        this.moves = new ArrayList<>();
         this.positionCounts = new HashMap<>();
         this.noPromotionCaptureCounter = 0;
     }
 
-    public void endRound(Move move) {
+    public void execute(Move move) {
+        Iterator<Move> moveIterator = move.iterator();
+        while (moveIterator.hasNext()) {
+            Move subMove = moveIterator.next();
+            subMove.execute(board);
+            support.firePropertyChange("boardChange", null, null);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
         if (move.isMandatory() || move.isPromotion(board)) {
             noPromotionCaptureCounter = 0;
             positionCounts.clear();
@@ -84,32 +117,27 @@ public class Game {
             noPromotionCaptureCounter++;
         }
         String fen = board.getFen(playerToMove);
-        Integer count = positionCounts.get(fen);
-        if (count == null) {
-            positionCounts.put(fen, 1);
-        } else {
-            positionCounts.put(fen, count + 1);
-        }
+        positionCounts.merge(fen, 1, Integer::sum);
         moves.add(move);
         playerToMove = Colour.opposite(playerToMove);
         board.invert();
+        support.firePropertyChange("boardChange", null, null);
     }
 
     public void write(String fileName) throws IOException {
-        BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
          
-        for (int round = 0; round < moves.size() / 2; round++) {
-            bw.write((round + 1) + ". " + moves.get(round * 2) + " " + moves.get(round * 2 + 1));
-            bw.newLine();
+            for (int round = 0; round < moves.size() / 2; round++) {
+                bw.write((round + 1) + ". " + moves.get(round * 2) + " " + moves.get(round * 2 + 1));
+                bw.newLine();
+            }
+            if (moves.size() % 2 == 1) {
+                bw.write((moves.size() / 2 + 1) + ". " + moves.getLast());
+            }
         }
-        if (moves.size() % 2 == 1) {
-            bw.write((moves.size() / 2 + 1) + ". " + moves.getLast());
-        }
-
-        bw.close();
     }
-
-
+    
+    
     public void read(String fileName) throws FileNotFoundException, FileFormatException, InvalidMoveException {
         initGame();
         File file = new File(fileName);
@@ -118,7 +146,7 @@ public class Game {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 line = line.trim();
-                if (line.length() == 0 || line.charAt(0) == '[') {
+                if (line.isEmpty() || line.charAt(0) == '[') {
                     continue;
                 }
                 String[] roundAndMoveStrings = line.split(" ");
@@ -141,8 +169,7 @@ public class Game {
                         throw new FileFormatException("Cannot parse file. A move is not correct!", e);
                     }
                     if (validMovesOfPlayerToMove().stream().anyMatch(move -> move.equals(blackMove))) { 
-                        blackMove.execute(board);
-                        endRound(blackMove);
+                        execute(blackMove);
                     } else {
                         throw new InvalidMoveException("There is an invalid move in the file according to the rules!");
                     }
@@ -158,8 +185,7 @@ public class Game {
                         throw new FileFormatException("Cannot parse file. A move is not correct!", e);
                     }
                     if (validMovesOfPlayerToMove().stream().anyMatch(move -> move.equals(whiteMove))) {
-                        whiteMove.execute(board);
-                        endRound(whiteMove);
+                        execute(whiteMove);
                     } else {
                         throw new InvalidMoveException("There is an invalid move in the file according to the rules!");
                     }
@@ -171,8 +197,7 @@ public class Game {
                 } else if (roundAndMoveStrings.length == 2) {
                     Move blackMove = Move.moveFromString(roundAndMoveStrings[1], board);
                     if (validMovesOfPlayerToMove().stream().anyMatch(move -> move.equals(blackMove))) { 
-                        blackMove.execute(board);
-                        endRound(blackMove);
+                        execute(blackMove);
                     } else {
                         throw new InvalidMoveException("There is an invalid move in the file according to the rules");
                     }
@@ -185,8 +210,10 @@ public class Game {
             if (sc.hasNextLine()) {
                 throw new FileFormatException("Cannot parse file! There are more lines");
             }
-        }
-        
+        }    
+    }
 
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        support.addPropertyChangeListener(pcl);
     }
 }
