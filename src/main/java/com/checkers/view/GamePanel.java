@@ -135,8 +135,8 @@ public class GamePanel extends JPanel implements PropertyChangeListener {
 
         g2.setColor(isBlack ? new Color(255, 215, 0) : new Color(200, 0, 0));
         
-        int cx = x + squareSize / 2;
-        int cy = y + squareSize / 2;
+        int cx = x * squareSize + squareSize / 2;
+        int cy = y * squareSize + squareSize / 2;
         int crownWidth = squareSize / 3;
         int crownHeight = squareSize / 4;
 
