@@ -18,27 +18,46 @@ import com.checkers.model.move.Move;
 import com.checkers.model.move.NormalMove;
 import com.checkers.model.piece.*;
 
+/**
+ * A játékpanel osztálya
+ */
 public class GamePanel extends JPanel implements PropertyChangeListener {
     private transient Game model;
     private transient Graphics2D g2;
     private Point selectedPoint;
     private int squareSize;
 
+    /**
+     * A játékpanel konstruktora
+     * @param model a játék, amit meg akarunk jeleníteni
+     * @param gameController a vezérlő, ami változtatja a játékot
+     */
     public GamePanel(Game model, GameController gameController) {
         this.model = model;
         addMouseListener(gameController);
         model.addPropertyChangeListener(this);
     }
 
+    /**
+     * @return a kiválasztott pont
+     */
     public Point getSelectedPoint() {
         return selectedPoint;
     }
-    
+  
+    /**
+     * Beállítja a kiválasztott pontot
+     * @param selectedPoint a kiválasztott pont
+     */
     public void setSelectedPoint(Point selectedPoint) {
         this.selectedPoint = selectedPoint;
         javax.swing.SwingUtilities.invokeLater(this::repaint);
     }
 
+    /**
+     * A komponenst megjeleníti
+     * @param g a felület, ahol megjelenítjük a játékot
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -55,11 +74,14 @@ public class GamePanel extends JPanel implements PropertyChangeListener {
         g2.translate(xOffset, yOffset);
 
         drawTable();
-        drawPieces();
+        drawPiecesAndMoveHighligts();
 
         g2.translate(-xOffset, -yOffset);
     }
 
+    /**
+     * A tábla kirajzolását végzi el
+     */
     private void drawTable() {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -74,10 +96,13 @@ public class GamePanel extends JPanel implements PropertyChangeListener {
         }
     }
 
-    private void drawPieces() {
+    /**
+     * A bábuk és a lépések kimelésének kirajzolását végzi el
+     */
+    private void drawPiecesAndMoveHighligts() {
         for (int i = 1; i <= 32; i++) {
             Point p = Board.pointFromSquareNumber(i);
-            Point displayPoint = (model.getPlayerToMove().getColour() == Colour.white) ? Board.invertPoint(p) : p;
+            Point displayPoint = (model.getPlayerToMove().getColour() == Colour.WHITE) ? Board.invertPoint(p) : p;
             if (!model.getBoard().isEmpty(p)) {
                 model.getBoard().getPiece(p).draw(this, displayPoint.x, displayPoint.y);
             }
@@ -91,8 +116,14 @@ public class GamePanel extends JPanel implements PropertyChangeListener {
         }
     }
 
+    /**
+     * Kirajzolja a játékpanelre az egyszerű bábut (double dispatch)
+     * @param checker az egyszerű bábu, amit ki akarunk rajzolni
+     * @param x kirajzolás helyének x koordinátája
+     * @param y kirajzolás helyének y koordinátája
+     */
     public void drawChecker(Checker checker, int x, int y) {
-        boolean isBlack = checker.getColour() == Colour.black;
+        boolean isBlack = checker.getColour() == Colour.BLACK;
         Color mainColor = isBlack ? new Color(40, 40, 40) : new Color(220, 220, 220);
         Color highlight = isBlack ? new Color(80, 80, 80) : new Color(255, 255, 255);
         Color border = isBlack ? Color.BLACK : Color.GRAY;
@@ -115,8 +146,14 @@ public class GamePanel extends JPanel implements PropertyChangeListener {
         g2.drawOval(pieceX + (pieceSize/4), pieceY + (pieceSize/4), pieceSize/2, pieceSize/2);
     }
 
+    /**
+     * Kirajzolja a játékpanelre a királyt (double dispatch)
+     * @param king a király, amit ki akarunk rajzolni
+     * @param x kirajzolás helyének x koordinátája
+     * @param y kirajzolás helyének y koordinátája
+     */
     public void drawKing(King king, int x, int y) {
-        boolean isBlack = king.getColour() == Colour.black;
+        boolean isBlack = king.getColour() == Colour.BLACK;
 
         Color mainColor = isBlack ? new Color(40, 40, 40) : new Color(220, 220, 220);
         Color highlight = isBlack ? new Color(80, 80, 80) : new Color(255, 255, 255);
@@ -161,6 +198,10 @@ public class GamePanel extends JPanel implements PropertyChangeListener {
 
 
 
+    /**
+     * A propertyChangeSupport által küldött eseményekre firissíti a nézetet
+     * @param evt a propertyChangeSupport által küldött eseményekre
+     */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("boardChange")) {
@@ -178,6 +219,10 @@ public class GamePanel extends JPanel implements PropertyChangeListener {
         }
     }
 
+    /** 
+     * Kirajzolja az ütéssorozat kiemelését a táblán (double dispatch)
+     * @param captureSequence az ütéssorozat, aminek a kimelését ki akarjuk rajzolni
+     */
     public void drawCaptureSequence(CaptureSequence captureSequence) {
         Stroke oldStroke = g2.getStroke();
         for (int i = 1; i < captureSequence.getCaptures().size(); i++) {
@@ -186,7 +231,7 @@ public class GamePanel extends JPanel implements PropertyChangeListener {
             g2.setColor(new Color(40, 40, 40, 100));
             g2.setStroke(new BasicStroke(3));
 
-            Point displayFrom = (model.getPlayerToMove().getColour() == Colour.white) ? Board.invertPoint(capture.getFrom()) : capture.getFrom();
+            Point displayFrom = (model.getPlayerToMove().getColour() == Colour.WHITE) ? Board.invertPoint(capture.getFrom()) : capture.getFrom();
 
             int startX = displayFrom.x * squareSize + squareSize / 4;
             int startY = displayFrom.y * squareSize + squareSize / 4;
@@ -201,7 +246,7 @@ public class GamePanel extends JPanel implements PropertyChangeListener {
         g2.setColor(new Color(40, 40, 40, 100)); 
 
         Capture lastCapture = captureSequence.getCaptures().getLast();
-        Point displayTo = (model.getPlayerToMove().getColour() == Colour.white) ? Board.invertPoint(lastCapture.getTo()) : lastCapture.getTo();
+        Point displayTo = (model.getPlayerToMove().getColour() == Colour.WHITE) ? Board.invertPoint(lastCapture.getTo()) : lastCapture.getTo();
 
         int dotSize = squareSize / 3; 
 
@@ -211,12 +256,16 @@ public class GamePanel extends JPanel implements PropertyChangeListener {
         g2.fillOval(dotX, dotY, dotSize, dotSize);
     }
 
+    /** 
+     * Kirajzolja a normál lépés kiemelését a táblán (double dispatch)
+     * @param normalMove a normál lépés, aminek a kimelését ki akarjuk rajzolni
+     */
     public void drawNormalMove(NormalMove normalMove) {
         g2.setColor(new Color(40, 40, 40, 100)); 
 
         int dotSize = squareSize / 3; 
 
-        Point displayTo = (model.getPlayerToMove().getColour() == Colour.white) ? Board.invertPoint(normalMove.getTo()) : normalMove.getTo();
+        Point displayTo = (model.getPlayerToMove().getColour() == Colour.WHITE) ? Board.invertPoint(normalMove.getTo()) : normalMove.getTo();
 
         int dotX = (displayTo.x * squareSize) + (squareSize - dotSize) / 2;
         int dotY = (displayTo.y * squareSize) + (squareSize - dotSize) / 2;
@@ -224,12 +273,16 @@ public class GamePanel extends JPanel implements PropertyChangeListener {
         g2.fillOval(dotX, dotY, dotSize, dotSize);
     }
 
+    /** 
+     * Kirajzolja az ütés kiemelését a táblán (double dispatch)
+     * @param capture az ütés, aminek a kimelését ki akarjuk rajzolni
+     */
     public void drawCapture(Capture capture) {
         g2.setColor(new Color(40, 40, 40, 100)); 
 
         int dotSize = squareSize / 3; 
 
-        Point displayTo = (model.getPlayerToMove().getColour() == Colour.white) ? Board.invertPoint(capture.getTo()) : capture.getTo();
+        Point displayTo = (model.getPlayerToMove().getColour() == Colour.WHITE) ? Board.invertPoint(capture.getTo()) : capture.getTo();
 
         int dotX = (displayTo.x * squareSize) + (squareSize - dotSize) / 2;
         int dotY = (displayTo.y * squareSize) + (squareSize - dotSize) / 2;

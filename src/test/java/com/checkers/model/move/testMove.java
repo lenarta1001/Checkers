@@ -12,6 +12,7 @@ import com.checkers.model.board.Board;
 import com.checkers.model.colour.Colour;
 import com.checkers.model.game.Game;
 import com.checkers.model.piece.*;
+import com.checkers.model.player.HumanPlayer;
 
 class TestMove {
 
@@ -34,7 +35,7 @@ class TestMove {
     void testCaptureSequenceString() {
         Board board = new Board();
         board.initBoard();
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(14));
         board.setPiece(null, Board.pointFromSquareNumber(27));
         List<Capture> captures = new ArrayList<>();
         captures.add(new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18)));
@@ -59,7 +60,7 @@ class TestMove {
     @Test
     void testIsPromotion() {
         Board board = new Board();
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(26));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(26));
         Move move = new NormalMove(Board.pointFromSquareNumber(26), Board.pointFromSquareNumber(29));
         assertTrue(move.isPromotion(board));
     }
@@ -78,7 +79,7 @@ class TestMove {
 
     @Test
     void testExecuteNormalMoveNoPromotion() {
-        Game game = new Game();
+        Game game = new Game(new HumanPlayer(Colour.BLACK), new HumanPlayer(Colour.WHITE));
         game.initGame();
         Board board = game.getBoard();
 
@@ -93,10 +94,10 @@ class TestMove {
     
     @Test
     void testExecuteNormalMovePromotion() {
-        Game game = new Game();
+        Game game = new Game(new HumanPlayer(Colour.BLACK), new HumanPlayer(Colour.WHITE));
         game.cleanInitGame();
         Board board = game.getBoard();
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(26));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(26));
 
         Move move = new NormalMove(Board.pointFromSquareNumber(26), Board.pointFromSquareNumber(29)); 
         move.execute(game);
@@ -109,12 +110,12 @@ class TestMove {
 
     @Test
     void testExecuteCaptureNoPromotion() {
-        Game game = new Game();
+        Game game = new Game(new HumanPlayer(Colour.BLACK), new HumanPlayer(Colour.WHITE));
         game.cleanInitGame();
         Board board = game.getBoard();
 
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(11));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(18));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(11));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(18));
 
         Move move = new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18));
         move.execute(game);
@@ -129,12 +130,12 @@ class TestMove {
 
     @Test
     void testExecuteCapturePromotion() {
-        Game game = new Game();
+        Game game = new Game(new HumanPlayer(Colour.BLACK), new HumanPlayer(Colour.WHITE));
         game.cleanInitGame();
         Board board = game.getBoard();
 
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(22));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(27));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(22));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(27));
 
         Move move = new Capture(Board.pointFromSquareNumber(22), Board.pointFromSquareNumber(31));
         move.execute(game);
@@ -149,13 +150,13 @@ class TestMove {
 
     @Test
     void testExecuteCaptureSequenceNoPromotion() {
-        Game game = new Game();
+        Game game = new Game(new HumanPlayer(Colour.BLACK), new HumanPlayer(Colour.WHITE));
         game.cleanInitGame();
         Board board = game.getBoard();
 
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(11));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(18));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(27));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(11));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(18));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(27));
 
         List<Capture> captures = new ArrayList<>();
         captures.add(new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18)));
@@ -176,13 +177,13 @@ class TestMove {
 
     @Test
     void testExecuteCaptureSequencePromotion() {
-        Game game = new Game();
+        Game game = new Game(new HumanPlayer(Colour.BLACK), new HumanPlayer(Colour.WHITE));
         game.cleanInitGame();
         Board board = game.getBoard();
 
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(15));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(22));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(31));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(15));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(22));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(31));
 
         List<Capture> captures = new ArrayList<>();
         captures.add(new Capture(Board.pointFromSquareNumber(15), Board.pointFromSquareNumber(22)));

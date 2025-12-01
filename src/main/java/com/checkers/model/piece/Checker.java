@@ -61,10 +61,10 @@ public class Checker extends Piece {
     }
 
     /**
-     * Egy tábla adott pontjáról elvégezhető egyszerű lépések az egyszerű bábuval
-     * @param board a tábla, amin vizsgáljuk az egyszerű lépéseket
-     * @param point a pont, ahonnan az egyszerű lépeseket el akarjuk végezni
-     * @return az elvégezhető egyszerű lépések
+     * Egy tábla adott pontjáról elvégezhető normális lépések az egyszerű bábuval
+     * @param board a tábla, amin vizsgáljuk az normális lépéseket
+     * @param point a pont, ahonnan az normális lépeseket el akarjuk végezni
+     * @return az elvégezhető normális lépések
      */
     private List<Move> validNormalMoves(Board board, Point point) {
         List<Move> moves = new ArrayList<>();
@@ -99,6 +99,20 @@ public class Checker extends Piece {
         return moves;
     }
 
+    /**
+     * Karakterlánccá alakítja az egyszerű bábut (ld. specifikáció FEN)
+     * @return az egyszerű bábu krakterlánc formában
+     */
+    public String toString() {
+        return "";
+    }
+
+    /**
+     * Kirajzolja a játékpanelre az egyszerű bábut (double dispatch)
+     * @param gp a játék panel, amire ki akarjuk rajzolni az egyszerű bábut
+     * @param x a kirajzolás helyének x koordinátája
+     * @param y a kirajzolás helyének y koordinátája
+     */
     public void draw(GamePanel gp, int x, int y) {
         gp.drawChecker(this, x, y);
     }

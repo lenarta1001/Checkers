@@ -4,12 +4,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
+/**
+ * Az exportálás dialógus osztálya
+ * A segítségével a felhasználó ki tudja választani, az exportálás részletei
+ */
 public class ExportDialog extends JDialog {
     private JTextField pathField;
     private JTextField fileNameField;
     private File selectedDirectory;
     private boolean confirmed = false;
 
+    /**
+     * Az exportálás dialógus konstruktora
+     * @param owner a tartalmazó komponens
+     */
     public ExportDialog(Frame owner) {
         super(owner, "Export Game", true);
         initComponents();
@@ -17,6 +25,9 @@ public class ExportDialog extends JDialog {
         setLocationRelativeTo(owner);
     }
 
+    /**
+     * Az exportálás dialógus által tartalmazott komponenseket inicializálja
+     */
     private void initComponents() {
         JLabel pathLabel = new JLabel("Save in:");
         pathField = new JTextField(20);
@@ -80,6 +91,9 @@ public class ExportDialog extends JDialog {
         add(panel);
     }
 
+    /**
+     * A könyvtár kiválasztását végzi el
+     */
     private void chooseDirectory() {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Select Directory");
@@ -91,8 +105,12 @@ public class ExportDialog extends JDialog {
         }
     }
 
+    /**
+     * A kiválasztott könyvtár érvényességének ellenőrzését végzi el
+     * @return kiválasztott könyvtár érvényes-e
+     */
     private boolean validateInput() {
-        if (selectedDirectory == null || pathField.getText().trim().isEmpty()) {
+        if (selectedDirectory == null || !selectedDirectory.exists() || pathField.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please select a directory.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -103,10 +121,16 @@ public class ExportDialog extends JDialog {
         return true;
     }
 
+    /**
+     * @return ki lett-e választva érvényes fájl és meg van-e nyomva az export gomb
+     */
     public boolean isConfirmed() {
         return confirmed;
     }
 
+    /**
+     * @return a kiválasztott .txt kiterkesztésú fájl
+     */
     public File getSelectedFile() {
         String name = fileNameField.getText().trim();
         if (!name.toLowerCase().endsWith(".txt")) {

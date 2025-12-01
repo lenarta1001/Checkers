@@ -8,12 +8,24 @@ import com.checkers.model.colour.Colour;
 import com.checkers.model.game.Game;
 import com.checkers.model.move.Move;
 
+/**
+ * A bot játékos osztálya
+ */
 public class ComputerPlayer extends Player {
 
+    /**
+     * A bot játékos konstruktora
+     * @param colour a bot játékos színe
+     */
     public ComputerPlayer(Colour colour) {
         super(colour);
     }
 
+    /**
+     * A bot játékos egy lépését végzi el 
+     * @param game a játék, amiben a bot játékos játszik
+     * @param move a lépés amit a bot játékos választott
+     */
     public void handleTurn(Game game, Move move) {
         game.swapPlayers(); // Az ütéssorozat megjelenítésénél ne forduljon meg a tábla
         game.updateCounters(move);
@@ -21,6 +33,10 @@ public class ComputerPlayer extends Player {
         game.updateFenAndMoves(move);
     }
     
+    /**
+     * A bot játékos ellenfele lépése utáni teendőket végzi el
+     * @param game a játék, amiben a bot játékos játszik
+     */
     public void onOpponentTurnCompleted(Game game) {
         game.swapPlayers();
         game.checkIsGameOverOrDraw();
@@ -34,6 +50,10 @@ public class ComputerPlayer extends Player {
         game.checkIsGameOverOrDraw();
     }
 
+    /**
+     * A bot játékos első lépése előtti teendőket végzi el
+     * @param game a játék, amiben a bot játékos játszik
+     */
     public void firstTurn(Game game) {
         game.swapPlayers();
         game.getSupport().firePropertyChange("boardChange", null, null);

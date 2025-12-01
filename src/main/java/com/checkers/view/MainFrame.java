@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -21,11 +22,17 @@ import com.checkers.model.player.ComputerPlayer;
 import com.checkers.model.player.HumanPlayer;
 import com.checkers.model.player.Player;
 
+/**
+ * A főablak osztálya
+ */
 public class MainFrame extends JFrame {
     
     private transient Game game;
     private GamePanel currentBoardPanel;
 
+    /**
+     * A fő ablak konstruktora
+     */
     public MainFrame() {
         super("Checkers");
         
@@ -43,6 +50,10 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
     }
 
+    /**
+     * A menü bar-t létrehozó metódus
+     * @return a menübar
+     */
     private JMenuBar createJMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
@@ -72,6 +83,9 @@ public class MainFrame extends JFrame {
         return menuBar;
     }
 
+    /**
+     * Az új játék dialógust megeleníti és elindít egy új játékot, a dialógustól származó imformációk alapján
+     */
     private void showNewGameDialog() {
         if (game != null && !confirmAction("Start a new game? Unsaved progress will be lost.")) {
             return;
@@ -89,48 +103,55 @@ public class MainFrame extends JFrame {
         }
     }
 
+    /**
+     * Új játékot indít el az új játék dialógusban kiválasztott opciók alapján
+     * @param isHumanBlack az ember játékos a fekete bábukkal játszik-e
+     * @param isVsComputer PvE játékmódú játékot indítunk-e
+     */
     private void initNewGame(boolean isHumanBlack, boolean isVsComputer) {
-        Player p1;
-        Player p2;
-
-        if (isVsComputer) {
-            if (isHumanBlack) {
-                p1 = new HumanPlayer(Colour.black);
-                p2 = new ComputerPlayer(Colour.white);
-            } else {
-                p1 = new ComputerPlayer(Colour.black);
-                p2 = new HumanPlayer(Colour.white);
-            }
-        } else {
-            p1 = new HumanPlayer(Colour.black);
-            p2 = new HumanPlayer(Colour.white);
-        }
-
-        startGame(new Game(p1, p2));
+        List<Player> players = createPlayers(isHumanBlack, isVsComputer);
+        startGame(new Game(players.get(0), players.get(1)));
     }
 
+    /**
+     * A játékhoz szükséges játékosokat létrehozását végzi el
+     * @param isHumanBlack az ember játékos a fekete bábukkal játszik-e
+     * @param isVsComputer PvE játékmódú játékot indítunk-e
+     * @return a két játékos listája
+     */
+    private List<Player> createPlayers(boolean isHumanBlack, boolean isVsComputer) {
+        Player p1;
+        Player p2;
+        if (isVsComputer) {
+            if (isHumanBlack) {
+                p1 = new HumanPlayer(Colour.BLACK);
+                p2 = new ComputerPlayer(Colour.WHITE);
+            } else {
+                p1 = new ComputerPlayer(Colour.BLACK);
+                p2 = new HumanPlayer(Colour.WHITE);
+            }
+        } else {
+            p1 = new HumanPlayer(Colour.BLACK);
+            p2 = new HumanPlayer(Colour.WHITE);
+        }
+        return List.of(p1, p2);
+    }
+
+    /**
+     * Az importálást végzi el
+     * @param file a fájl amiből importálunk
+     * @param isHumanBlack az ember játékos a fekete bábukkal játszik-e
+     * @param isVsComputer PvE játékmódú játékot indítunk-e
+     */
     private void handleImport(File file, boolean isHumanBlack, boolean isVsComputer) {
         if (file == null || !file.exists()) {
             JOptionPane.showMessageDialog(this, "Invalid file selected.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        Player p1;
-        Player p2;
-        if (isVsComputer) {
-            if (isHumanBlack) {
-                p1 = new HumanPlayer(Colour.black);
-                p2 = new ComputerPlayer(Colour.white);
-            } else {
-                p1 = new ComputerPlayer(Colour.black);
-                p2 = new HumanPlayer(Colour.white);
-            }
-        } else {
-            p1 = new HumanPlayer(Colour.black);
-            p2 = new HumanPlayer(Colour.white);
-        }
+        List<Player> players = createPlayers(isHumanBlack, isVsComputer);
         try {
-            Game importedGame = new Game(p1, p2);
+            Game importedGame = new Game(players.get(0), players.get(1));
             importedGame.read(file.getAbsolutePath());
             startGame(importedGame);
         } catch (Exception e) {
@@ -138,6 +159,10 @@ public class MainFrame extends JFrame {
         }
     }
 
+    /**
+     * Leszedi a korábban megjelenített játék panelt és megjeleníti az újat
+     * @param newGame az új játék
+     */
     private void startGame(Game newGame) {
         this.game = newGame;
         
@@ -159,6 +184,9 @@ public class MainFrame extends JFrame {
         repaint();
     }
 
+    /**
+     * A kilépés lebonyolítását végzi el
+     */
     public void handleExit() {
         if (game != null) {
             if (confirmAction("Do you really want to exit? Unsaved progress will be lost.")) {
@@ -169,11 +197,19 @@ public class MainFrame extends JFrame {
         }
     }
 
+    /**
+     * Megjelenít egy megerősítő dialógust 
+     * @param message az üzenet, amit meg akarunk jeleníteni
+     * @return megerősítette-e a felhasználó
+     */
     private boolean confirmAction(String message) {
         int result = JOptionPane.showConfirmDialog(this, message, "Confirm", JOptionPane.YES_NO_OPTION);
         return result == JOptionPane.YES_OPTION;
     }
 
+    /**
+     * Az export dialógust megeleníti és exportálja a játékot, a dialógustól származó imformációk alapján
+     */
     private void handleExport() {
         if (game == null) {
             JOptionPane.showMessageDialog(this, "No game to export!");

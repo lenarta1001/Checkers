@@ -6,23 +6,33 @@ import com.checkers.model.board.*;
 import com.checkers.model.game.Game;
 import com.checkers.view.GamePanel;
 
+/**
+ * Az ütéssorozat osztálya
+ */
 public class CaptureSequence extends Capture {
-    protected List<Capture> captures;
+    private List<Capture> captures;
 
+    /**
+     * Az ütéssorozat konstruktora
+     * @param captures az ütéssorozat ütései
+     */
     public CaptureSequence(List<Capture> captures) {
         super(captures.getFirst().from, captures.getLast().to);
         this.captures = captures;
     }
 
+    /**
+     * @return az ütéssorozat ütései
+     */
     public List<Capture> getCaptures() {
         return captures;
     }
 
-    @Override
-    public void execute(Game game) {
-        game.executeCaptureSequence(this);
-    }
-
+    
+    /**
+     * Az karakterlánccá konvertálja az ütéssorozatot (ld. specifikáció Portable Draughts Notation)
+     * @return az ütéssorozat karakterlánc formátumban
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -34,6 +44,21 @@ public class CaptureSequence extends Capture {
         return sb.toString();
     }
 
+    /**
+     * Elvégzi az ütéssorozatot a játék tábláján
+     * @param game a játék aminek a tábláján az ütést végezzük
+     */
+    @Override
+    public void execute(Game game) {
+        game.executeCaptureSequence(this);
+    }
+
+
+    /**
+     * Eldönti, hogy egy másik objektummal tartalmilag azonos-e az ütéssorozat
+     * @param o az objektum, amivel összehasonlítjuk
+     * @return tartalmilag azonos-e az objektummal
+     */
     public boolean equals(Object o) {
         if (this == o) { 
             return true;
@@ -47,6 +72,10 @@ public class CaptureSequence extends Capture {
         return captures.equals(other.captures);
     }
 
+    /** 
+     * Kirajzolja az ütéssorozat kiemelését a táblán (double dispatch)
+     * @param gp a játék panel, ahol meg akarjuk jeleníteni az ütéssorozatot
+     */
     @Override
     public void draw(GamePanel gp) {
         gp.drawCaptureSequence(this);

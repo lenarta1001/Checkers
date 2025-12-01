@@ -5,6 +5,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 
+/**
+ * Az új játék dialógus osztálya
+ * A segítségével a felhasználó ki tudja választani, az új játék indításának részletei
+ */
 public class NewGameDialog extends JDialog {
     private JComboBox<String> colorCombo;
     private JComboBox<String> opponentCombo;
@@ -12,8 +16,12 @@ public class NewGameDialog extends JDialog {
     private JTextField filePathField;
     
     private boolean confirmed = false;
-    private File importedFile;
+    private File selectedFile;
 
+    /**
+     * Az új játék dialógus konstruktora
+     * @param owner a tartalmazó komponens
+     */
     public NewGameDialog(Frame owner) {
         super(owner, "New Game Settings", true);
         initComponents();
@@ -21,6 +29,9 @@ public class NewGameDialog extends JDialog {
         setLocationRelativeTo(owner);
     }
 
+    /**
+     * Az új játék dialógus által tartalmazott komponenseket inicializálja
+     */
     private void initComponents() {
         JLabel colorLabel = new JLabel("Your Colour:");
         String[] colors = {"Black (Starts)", "White"};
@@ -104,28 +115,54 @@ public class NewGameDialog extends JDialog {
         add(panel);
     }
 
+    /**
+     * A fájl kiválasztását végzi el
+     */
     private void chooseFile() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Select Game File");
         fileChooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
         
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            importedFile = fileChooser.getSelectedFile();
-            filePathField.setText(importedFile.getAbsolutePath());
+            selectedFile = fileChooser.getSelectedFile();
+            filePathField.setText(selectedFile.getAbsolutePath());
         }
     }
 
+    /**
+     * A kiválasztott fájl érvényességének ellenőrzését végzi el
+     * @return kiválasztott fájl érvényes-e
+     */
     private boolean validateInput() {
-        if (importCheck.isSelected() && (importedFile == null || !importedFile.exists())) {
+        if (importCheck.isSelected() && (selectedFile == null || !selectedFile.exists())) {
             JOptionPane.showMessageDialog(this, "Please select a valid file to import.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
     }
 
+    /**
+     * @return ki lett-e választva érvényes fájl és meg van-e nyomva a start gomb
+     */
     public boolean isConfirmed() { return confirmed; }
+
+    /**
+     * @return a kezdőjátékos fekete-e
+     */
     public boolean isBlack() { return colorCombo.getSelectedIndex() == 0; }
+
+    /**
+     * @return a játéktípus bot elleni-e
+     */
     public boolean isVsComputer() { return opponentCombo.getSelectedIndex() == 1; }
+
+    /**
+     * @return a játék kezdetét importáljuk-e
+     */
     public boolean isImport() { return importCheck.isSelected(); }
-    public File getSelectedFile() { return importedFile; }
+
+    /**
+     * @return a kiválasztott fájl
+     */
+    public File getSelectedFile() { return selectedFile; }
 }

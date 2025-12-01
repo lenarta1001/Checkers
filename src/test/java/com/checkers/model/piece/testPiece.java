@@ -15,28 +15,28 @@ class TestPiece {
     
     @Test
     void testGetColour() {
-        Piece piece = new Checker(Colour.black);
-        assertEquals(Colour.black, piece.getColour());
+        Piece piece = new Checker(Colour.BLACK);
+        assertEquals(Colour.BLACK, piece.getColour());
     }
 
     @Test
     void testToStringChecker() {
-        Piece piece = new Checker(Colour.black);
+        Piece piece = new Checker(Colour.BLACK);
         assertEquals("", piece.toString());
     }
 
     @Test
     void testToStringKing() {
-        Piece piece = new King(Colour.black);
+        Piece piece = new King(Colour.BLACK);
         assertEquals("K", piece.toString());
     }
 
     @Test
     void testValidNormalMovesBlackChecker() {
         Board board = new Board();
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(11));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(14));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(18));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(11));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(18));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(11)).validMoves(board, Board.pointFromSquareNumber(11));
         Move expected = new NormalMove(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(15));
@@ -47,9 +47,9 @@ class TestPiece {
     @Test
     void testValidNormalMovesWhiteChecker() {
         Board board = new Board();
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(22));
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(18));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(13));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(22));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(18));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(13));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(22)).validMoves(board, Board.pointFromSquareNumber(22));
         Move expected = new NormalMove(Board.pointFromSquareNumber(22), Board.pointFromSquareNumber(19));
@@ -60,8 +60,8 @@ class TestPiece {
     @Test
     void testValidCapturesBlackChecker() {
         Board board = new Board();
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(11));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(11));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(14));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(11)).validMoves(board, Board.pointFromSquareNumber(11));
         Move expected = new Capture(Board.pointFromSquareNumber(11), Board.pointFromSquareNumber(18));
@@ -72,8 +72,8 @@ class TestPiece {
     @Test
     void testValidCapturesWhiteChecker() {
         Board board = new Board();
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(22));
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(18));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(22));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(18));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(22)).validMoves(board, Board.pointFromSquareNumber(22));
         Move expected = new Capture(Board.pointFromSquareNumber(22), Board.pointFromSquareNumber(13));
@@ -84,9 +84,9 @@ class TestPiece {
     @Test
     void testValidCaptureSequencesBlackChecker() {
         Board board = new Board();
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(11));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(14));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(22));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(11));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(22));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(11)).validMoves(board, Board.pointFromSquareNumber(11));
 
@@ -101,9 +101,9 @@ class TestPiece {
     @Test
     void testValidCaptureSequencesWhiteChecker() {
         Board board = new Board();
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(22));
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(18));
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(10));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(22));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(18));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(10));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(22)).validMoves(board, Board.pointFromSquareNumber(22));
 
@@ -118,9 +118,9 @@ class TestPiece {
     @Test
     void testValidNormalMovesBlackKing() {
         Board board = new Board();
-        board.setPiece(new King(Colour.black), Board.pointFromSquareNumber(11));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(14));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(18));
+        board.setPiece(new King(Colour.BLACK), Board.pointFromSquareNumber(11));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(18));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(11)).validMoves(board, Board.pointFromSquareNumber(11));
         List<Move> expectedMoves = new ArrayList<>();
@@ -136,9 +136,9 @@ class TestPiece {
     @Test
     void testValidNormalMovesWhiteKing() {
         Board board = new Board();
-        board.setPiece(new King(Colour.white), Board.pointFromSquareNumber(22));
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(18));
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(13));
+        board.setPiece(new King(Colour.WHITE), Board.pointFromSquareNumber(22));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(18));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(13));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(22)).validMoves(board, Board.pointFromSquareNumber(22));
         List<Move> expectedMoves = new ArrayList<>();
@@ -154,9 +154,9 @@ class TestPiece {
     @Test
     void testValidCapturesBlackKing() {
         Board board = new Board();
-        board.setPiece(new King(Colour.black), Board.pointFromSquareNumber(11));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(14));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(7));
+        board.setPiece(new King(Colour.BLACK), Board.pointFromSquareNumber(11));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(7));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(11)).validMoves(board, Board.pointFromSquareNumber(11));
         List<Move> expectedMoves = new ArrayList<>();
@@ -171,9 +171,9 @@ class TestPiece {
     @Test
     void testValidCapturesWhiteKing() {
         Board board = new Board();
-        board.setPiece(new King(Colour.white), Board.pointFromSquareNumber(22));
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(26));
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(19));
+        board.setPiece(new King(Colour.WHITE), Board.pointFromSquareNumber(22));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(26));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(19));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(22)).validMoves(board, Board.pointFromSquareNumber(22));
         List<Move> expectedMoves = new ArrayList<>();
@@ -188,9 +188,9 @@ class TestPiece {
     @Test
     void testValidCaptureSequencesBlackKing() {
         Board board = new Board();
-        board.setPiece(new King(Colour.black), Board.pointFromSquareNumber(19));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(14));
-        board.setPiece(new Checker(Colour.white), Board.pointFromSquareNumber(13));
+        board.setPiece(new King(Colour.BLACK), Board.pointFromSquareNumber(19));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.WHITE), Board.pointFromSquareNumber(13));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(19)).validMoves(board, Board.pointFromSquareNumber(19));
 
@@ -205,9 +205,9 @@ class TestPiece {
     @Test
     void testValidCaptureSequencesWhiteKing() {
         Board board = new Board();
-        board.setPiece(new King(Colour.white), Board.pointFromSquareNumber(19));
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(14));
-        board.setPiece(new Checker(Colour.black), Board.pointFromSquareNumber(13));
+        board.setPiece(new King(Colour.WHITE), Board.pointFromSquareNumber(19));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(14));
+        board.setPiece(new Checker(Colour.BLACK), Board.pointFromSquareNumber(13));
 
         List<Move> moves = board.getPiece(Board.pointFromSquareNumber(19)).validMoves(board, Board.pointFromSquareNumber(19));
 

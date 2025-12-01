@@ -17,10 +17,12 @@ import com.checkers.model.move.*;
 import com.checkers.model.board.Board;
 import com.checkers.model.colour.Colour;
 import com.checkers.model.piece.*;
-import com.checkers.model.player.HumanPlayer;
 import com.checkers.model.player.Player;
 import com.checkers.model.*;
 
+/**
+ * A játék osztálya
+ */
 public class Game {
     private Board board;
     private Player playerToMove;
@@ -30,82 +32,131 @@ public class Game {
     private int noPromotionCaptureCounter;
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
+    /**
+     * A játék konstruktora
+     * @param playerToMove a kezdő játékos
+     * @param playerNotToMove a másik játékos
+     */
     public Game(Player playerToMove, Player playerNotToMove) {
         this.playerToMove = playerToMove;
         this.playerNotToMove = playerNotToMove;
         initGame();
     }
 
-    public Game() {
-        this(new HumanPlayer(Colour.black), new HumanPlayer(Colour.white));
-    }
-
+    /**
+     * Elkezd egy játékot
+     */
     public void start() {
         playerToMove.firstTurn(this);
     }
 
+    /**
+     * @return az éppen következő játékos 
+     */
     public Player getPlayerToMove() {
         return playerToMove;
     }
 
+    /**
+     * @return az éppen következő játékos után következő játékos
+     */
     public Player getPlayerNotToMove() {
         return playerNotToMove;
     }
 
+    /**
+     * @return a játékhoz tartozó tábla
+     */
     public Board getBoard() {
         return board;
     }
 
+    /**
+     * @return nézet értesítéséhez szükséges PropertyChangeSupport
+     */
     public PropertyChangeSupport getSupport() {
         return support;
     }
+    
+    /**
+     * A nézet értesítéshez szükséges PropertyChangeListener ad hozzá a PropertyChangeSupport-hoz
+     * @param pcl a PropertyChangeListener amit, hozzá akarunk adni
+     */
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        support.addPropertyChangeListener(pcl);
+    }
 
+    /**
+     * @return az éppen következő játékosnak van-e több lépése 
+     */
     public boolean isGameOver() {
         return playerToMove.validMoves(this).isEmpty();
     }
 
+    /**
+     * @return az eredmény döntetlen-e
+     */
     public boolean isDraw() {
         return isDrawRepetition() || isDrawNoPromotionCapture();
     }
-
-    public void checkIsGameOverOrDraw() {
-        if (isGameOver()) {
-            getSupport().firePropertyChange("gameOver", null, null);
+    
+    /**
+     * A nézetet értesíti a győzelemről vagy a döntetlenről 
+    */
+   public void checkIsGameOverOrDraw() {
+       if (isGameOver()) {
+           getSupport().firePropertyChange("gameOver", null, null);
         } else if (isDraw()) {
             getSupport().firePropertyChange("draw", null, null);
         }
     }
-
-    public boolean isDrawRepetition() {
-        return positionCounts.entrySet().stream().anyMatch(entry -> entry.getValue() >= 3);
+    
+    /**
+     * @return az eredmény döntetlen-e ismétlés miatt (ld. specifikáció)
+    */
+   public boolean isDrawRepetition() {
+       return positionCounts.entrySet().stream().anyMatch(entry -> entry.getValue() >= 3);
     }
-
+    
+    /**
+     * @return az eredmény döntetlen-e, mert nem volt 30 lépésig se dámává alakulás, se ütés
+     */
     public boolean isDrawNoPromotionCapture() {
         return noPromotionCaptureCounter >= 30;
     }
 
-    
+    /**
+     * A játék kezdetét állítja be
+     */
     public void initGame() {
         this.board = new Board();
         this.board.initBoard();
         this.previousMoves = new ArrayList<>();
         this.positionCounts = new HashMap<>();
         this.noPromotionCaptureCounter = 0;
-        if (playerToMove.getColour() != Colour.black) {
+        if (playerToMove.getColour() != Colour.BLACK) {
             swapPlayers();
         }
     }
 
+    /**
+     * Egy üres táblájú játék kezdetét állítja be
+     */
     public void cleanInitGame() {
         this.board = new Board();
         this.previousMoves = new ArrayList<>();
         this.positionCounts = new HashMap<>();
         this.noPromotionCaptureCounter = 0;
-        if (playerToMove.getColour() != Colour.black) {
+        if (playerToMove.getColour() != Colour.BLACK) {
             swapPlayers();
         }
     }
 
+    /**
+     * A játék kiírását végzi el
+     * @param fileName a fájl neve, ahova ki akarjuk íratni a játékot
+     * @throws IOException ha a fájl nem létezik
+     */
     public void write(String fileName) throws IOException {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
          
@@ -119,12 +170,19 @@ public class Game {
         }
     }
 
+    /**
+     * A játékosok cserélyét végzi el
+     */
     public void swapPlayers() {
         Player tempPlayer = playerToMove;
         playerToMove = playerNotToMove;
         playerNotToMove = tempPlayer;
     }
 
+    /**
+     * Egy lépés elvégzése előtt frissíti a 
+     * @param move
+     */
     public void updateCounters(Move move) {
         if (move.isMandatory() || move.isPromotion(board)) {
             noPromotionCaptureCounter = 0;
@@ -134,13 +192,23 @@ public class Game {
         }
     }
 
+    /**
+     * Egy lépés elvégzése után 
+     * @param move
+     */
     public void updateFenAndMoves(Move move) {
         String fen = board.getFen(playerToMove);
         positionCounts.merge(fen, 1, Integer::sum);
         previousMoves.add(move);
     }
     
-    
+    /**
+     * A játék beolvasását végzi el
+     * @param fileName 
+     * @throws FileNotFoundException ha nem létetik ilyen fájl
+     * @throws FileFormatException ha a fájl formátuma hibás
+     * @throws InvalidMoveException ha a fájl olyan lépést olvas be, ami nem érvényes a szabályok szerint
+     */
     public void read(String fileName) throws FileNotFoundException, FileFormatException, InvalidMoveException {
         initGame();
         File file = new File(fileName);
@@ -226,10 +294,10 @@ public class Game {
         support.firePropertyChange("boardChange", null, null); 
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener pcl) {
-        support.addPropertyChangeListener(pcl);
-    }
-
+    /**
+     * Az ütés végrehajtását végzi el (double dispatch)
+     * @param capture az ütés, amit végre akarunk hajtani
+     */
     public void executeCapture(Capture capture) {
         if (!capture.isPromotion(board)) {
             board.setPiece(board.getPiece(capture.getFrom()), capture.getTo());
@@ -242,6 +310,10 @@ public class Game {
         board.setPiece(null, capturedPoint);
     }
 
+    /**
+     * Az ütéssorozat végrehajtását végzi el (double dispatch)
+     * @param capture az ütéssorozat, amit végre akarunk hajtani
+     */
     public void executeCaptureSequence(CaptureSequence captureSequence) {
         for (Capture capture : captureSequence.getCaptures()) {
             capture.execute(this);
@@ -255,6 +327,10 @@ public class Game {
         }
     }
 
+    /**
+     * A normál lépés végrehajtását végzi el (double dispatch)
+     * @param capture az egyszerű lépés, amit végre akarunk hajtani
+     */
     public void executeNormalMove(NormalMove normalMove) {
         if (!normalMove.isPromotion(board)) {
             board.setPiece(board.getPiece(normalMove.getFrom()), normalMove.getTo());

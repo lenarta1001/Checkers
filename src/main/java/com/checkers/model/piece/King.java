@@ -101,13 +101,20 @@ public class King extends Piece {
     }
 
     /**
-     * A Fen jelöléshez szükséges karakterlánccá alakító metódus
+     * Karakterlánccá alakítja a királyt (ld. specifikáció FEN)
+     * @return a király krakterlánc formában
      */
     @Override
     public String toString() {
         return "K";
     }
 
+    /**
+     * Kirajzolja a játékpanelre a királyt (double dispatch)
+     * @param gp a játék panel, amire ki akarjuk rajzolni a királyt
+     * @param x a kirajzolás helyének x koordinátája
+     * @param y a kirajzolás helyének y koordinátája
+     */
     public void draw(GamePanel gp, int x, int y) {
         gp.drawKing(this, x, y);
     }

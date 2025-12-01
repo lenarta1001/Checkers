@@ -68,10 +68,10 @@ class TestBoard {
         for (int i = 1; i <= 32; i++) {
             if (i <= 12) {
                 assertFalse(board.isEmpty(Board.pointFromSquareNumber(i)));
-                assertEquals(Colour.black, board.getPiece(Board.pointFromSquareNumber(i)).getColour());
+                assertEquals(Colour.BLACK, board.getPiece(Board.pointFromSquareNumber(i)).getColour());
             } else if (i >= 21) {
                 assertFalse(board.isEmpty(Board.pointFromSquareNumber(i)));
-                assertEquals( Colour.white, board.getPiece(Board.pointFromSquareNumber(i)).getColour());
+                assertEquals(Colour.WHITE, board.getPiece(Board.pointFromSquareNumber(i)).getColour());
             } else {
                 assertTrue(board.isEmpty(Board.pointFromSquareNumber(i)));
             }
@@ -82,7 +82,7 @@ class TestBoard {
     void testFen() {
         Board board = new Board();
         board.initBoard();
-        board.setPiece(new King(Colour.white), new Point(1, 0));
-        assertEquals("B:W21,22,23,24,25,26,27,28,29K,30,31,32:B1,2,3,4,5,6,7,8,9,10,11,12", board.getFen(new HumanPlayer(Colour.black)));
+        board.setPiece(new King(Colour.WHITE), new Point(1, 0));
+        assertEquals("B:W21,22,23,24,25,26,27,28,29K,30,31,32:B1,2,3,4,5,6,7,8,9,10,11,12", board.getFen(new HumanPlayer(Colour.BLACK)));
     }
 }

@@ -10,14 +10,24 @@ import com.checkers.model.game.Game;
 import com.checkers.model.move.Move;
 import com.checkers.view.GamePanel;
 
-
+/**
+ * A játékvezérlő osztálya
+ */
 public class GameController extends MouseAdapter {
     private Game model;
 
+    /**
+     * A játékvezárlő konstruktora
+     * @param model a játék amit vezérelni fog
+     */
     public GameController(Game model) {
         this.model = model;
     }
 
+    /**
+     * Az egér lenyomásának kezelését végzi el
+     * @param e az egéren végzett művelet miatt létrejövő esemény
+     */
     @Override
     public void mouseClicked(MouseEvent e) {
         if (model.isGameOver() || model.isDraw()) {
@@ -47,9 +57,16 @@ public class GameController extends MouseAdapter {
         handleClickedPoint(panel, row, col);
     }
 
+    /**
+     * A lenyomott cella koordinátái és a játék korábbi állapota alapján a változtatásokat végzi el
+     * Vagy játékost léptet, vagy a kiválasztott pontot állítja be
+     * @param panel a játék panel ahol megjelenítjük a játékot
+     * @param row a lenyomott cella y koordinátája
+     * @param col a lenyomott cella x koordinátája
+     */
     private void handleClickedPoint(GamePanel panel, int row, int col) {
         Point displayPoint = new Point(col, row);
-        Point p = model.getPlayerToMove().getColour() == Colour.white ? Board.invertPoint(displayPoint) : displayPoint;
+        Point p = model.getPlayerToMove().getColour() == Colour.WHITE ? Board.invertPoint(displayPoint) : displayPoint;
         if (panel.getSelectedPoint() == null) {
             if (!model.getBoard().isEmpty(p) && model.getBoard().getPiece(p).getColour() == model.getPlayerToMove().getColour()
                 && !model.getPlayerToMove().validMovesAt(model, p).isEmpty()) {

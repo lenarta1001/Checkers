@@ -10,7 +10,7 @@ import com.checkers.model.colour.Colour;
 
 
 /**
- * A bábuk abstract osztálya
+ * A bábu abstract osztálya
  */
 public abstract class Piece {
     private Colour colour;
@@ -22,7 +22,7 @@ public abstract class Piece {
      */
     protected Piece(Colour colour) {
         this.colour = colour;
-        this.direction = colour == Colour.black ? new Point(0, -1) : new Point(0, 1);
+        this.direction = colour == Colour.BLACK ? new Point(0, -1) : new Point(0, 1);
     }
 
     /**
@@ -34,13 +34,6 @@ public abstract class Piece {
     }
 
     /**
-     * A Fen jelöléshez szükséges karakterlánccá alakító metódus
-     */
-    public String toString() {
-        return "";
-    }
-
-    /**
      * Egy tábla adott pontjáról elvégezhető összes lépés a bábuval
      * @param table a tábla, amin vizsgáljuk a lépéseket
      * @param point a pont, ahonnan a lépeseket el akarjuk végezni
@@ -48,5 +41,11 @@ public abstract class Piece {
      */
     public abstract List<Move> validMoves(Board table, Point point);
 
+    /**
+     * Kirajzolja a játékpanelre a bábut
+     * @param gp a játék panel, amire ki akarjuk rajzolni a bábut
+     * @param x a kirajzolás helyének x koordinátája
+     * @param y a kirajzolás helyének y koordinátája
+     */
     public abstract void draw(GamePanel gp, int x, int y);  
 }
